@@ -45,21 +45,25 @@ client.connect(err => {
             // idToken comes from the client app
             admin.auth().verifyIdToken(idToken)
                 .then((decodedToken) => {
-                    const uid = decodedToken.uid;
+                    // const uid = decodedToken.uid;
                     const tokenEmail = decodedToken.email;
-                    console.log(tokenEmail, req.query.email)
+                    const queryEmail = req.query.email
+                    // console.log(tokenEmail, queryEmail)
                     if (tokenEmail == req.query.email) {
-                        bookingsCollection.find({ email: req.query.email })
+                        bookingsCollection.find({ email: queryEmail })
                             .toArray((err, documents) => {
-                                res.send(documents);
+                                res.statusCode(200).send(documents);
                             })
                     }
+                    else {
+                        res.statusCode(401).send('Unauthorized access');
+                    }
                 }).catch((error) => {
-                    // Handle error
+                    res.statusCode(401).send('Unauthorized access')
                 });
+        } else {
+            res.statusCode(401).send('Unauthorized access');
         }
-
-
     })
 
 
