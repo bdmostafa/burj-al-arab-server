@@ -1,6 +1,12 @@
 const express = require('express')
-const app = express()
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const app = express();
+
 const port = 5000
+
+app.use(cors());
+app.use(bodyParser.json());
 
 
 const MongoClient = require('mongodb').MongoClient;
@@ -11,14 +17,18 @@ const client = new MongoClient(
     { useNewUrlParser: true });
 client.connect(err => {
     const bookingsCollection = client.db("burjAlArab").collection("bookings");
-    // perform actions on the collection object
-    console.log('ok')
+
+    app.post('/addBooking', (req, res) => {
+        const newBooking = req.body;
+        bookingsCollection.insertOne(newBooking)
+        .then(result => {
+            res.send(result.insertedCount > 0);
+        })
+    })
 
 
 
-
-
-    client.close();
+    // client.close();
 });
 
 
